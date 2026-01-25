@@ -1,0 +1,10 @@
+database:
+  host: string
+  port: number
+  user: string
+  password: string
+  name: string
+
+server:
+  port: number
+  env: development | production | stagging

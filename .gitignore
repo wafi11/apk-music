@@ -1,0 +1,9 @@
+# backend 
+backend/tmp/*
+backend/config.yaml
+
+
+# frontend
+frontend/.next
+frontend/node_modules
+frontend/.env

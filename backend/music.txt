@@ -1,0 +1,3 @@
+title,link_yt,link_spotify
+rumahkerumah,https://music.youtube.com/watch?v=xTQvdE1oOaw&si=DDbNbiO5uzV80h7J,https://open.spotify.com/track/2wAiFWjRupWmnDkQcu91MF?si=21e6ba1cec8b41f3
+membasuh,https://music.youtube.com/watch?v=-TVknpWcCIo&si=_ctJzioV-EACmS1c,https://open.spotify.com/track/3CBxVM0zGj41BQtE6m7gwb?si=d21857e46e484d7a
