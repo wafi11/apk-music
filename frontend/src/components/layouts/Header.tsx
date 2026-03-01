@@ -1,4 +1,3 @@
-import { navItems } from "@/data/DataNav";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -7,7 +6,6 @@ import { SearchMusic } from "../ui/SearchMusic";
 
 export const Header = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [scrolled, setScrolled] = useState<boolean>(false);
 
   return (
     <header
@@ -29,7 +27,7 @@ export const Header = () => {
             </Link>
           </div>
           <div className="hidden md:block w-full max-w-7xl">
-            <SearchMusic />
+            {/* <SearchMusic /> */}
           </div>
 
           {/* Desktop Navigation */}
@@ -59,25 +57,7 @@ export const Header = () => {
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      <div
-        className={`md:hidden bg-black transition-all duration-300 overflow-hidden ${
-          isOpen ? "max-h-96 border-t border-white/10" : "max-h-0"
-        }`}
-      >
-        <nav className="px-4 py-6 flex flex-col gap-4">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setIsOpen(false)}
-              className="text-white font-semibold hover:text-accent transition-colors py-2 text-lg"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-      </div>
+
     </header>
   );
 };

@@ -7,16 +7,16 @@ const nextConfig = {
         hostname: "images.unsplash.com",
       },
       {
-        hostname: "i.scdn.co",
+        hostname: "yt3.googleusercontent.com",
       },
       {
-        hostname: "image-cdn-fa.spotifycdn.com",
+        hostname: "i.ytimg.com",
       },
       {
-        hostname: "image-cdn-ak.spotifycdn.com",
+        hostname: "lh3.googleusercontent.com",
       },
       {
-        hostname: "encrypted-tbn0.gstatic.com",
+        hostname: "lastfm.freetls.fastly.net",
       },
     ],
   },

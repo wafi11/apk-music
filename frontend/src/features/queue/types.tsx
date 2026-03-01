@@ -1,8 +1,16 @@
 export type MyQueue = {
-  queueItemsId: number;
-  queueItemsOrder: number;
-  songName: string;
-  songImage: string;
-  songDuration: string;
-  songUrlStreaming: string;
+  album
+  : string
+  artist
+  : string
+  duration
+  : string
+  id
+  : string
+  image
+  : string
+  link
+  : string
+  title
+  : string
 };

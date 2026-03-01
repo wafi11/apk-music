@@ -6,6 +6,12 @@ export interface BackendResponse<T> {
   error?: string;
 }
 
+export type CursorResponse<T> = {
+  items: T;
+  nextCursor: string;
+  hasNextPage: boolean;
+};
+
 export interface ApiError {
   message: string;
   code: number;
@@ -27,7 +33,7 @@ export interface ErrorResponse {
   message?: string;
 }
 
-export type API_RESPONSE<T> = {
+export type ApiResponse<T> = {
   message: string;
   status: number;
   data: T;

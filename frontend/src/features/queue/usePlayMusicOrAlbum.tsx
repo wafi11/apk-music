@@ -1,9 +1,9 @@
 import { myQueue, useCreateQueue } from "@/features/queue/api";
-import { Music } from "@/features/songs/types";
+import { Song } from "@/features/songs/types";
 import { useAudioStore } from "@/hooks/useSongs";
 import { useState } from "react";
 
-export function usePlayMusicOrAlbum(song: Music) {
+export function usePlayMusicOrAlbum(song: Song) {
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const playSong = useAudioStore((state) => state.playSong);
   const currentSong = useAudioStore((state) => state.currentSong);
@@ -19,21 +19,27 @@ export function usePlayMusicOrAlbum(song: Music) {
       console.error("❌ Error playing song:", error);
     }
   };
-  const createQueueMutation = useCreateQueue(song.title);
-  const { loadQueue, playFromQueue } = useAudioStore();
+  const createQueueMutation = useCreateQueue({
+    songs: [
+      {
+        id: song.id
+      }
+    ]
+  });
+  const { loadQueue } = useAudioStore();
 
-  const handlePlayAlbum = async () => {
-    // 1. Create queue di backend
-    createQueueMutation.mutate();
+  const handleQueue = async () => {
+    try {
+      // ✅ tunggu sampai queue selesai dibuat dulu
+      await createQueueMutation.mutateAsync();
 
-    const queueData = await myQueue();
+      // baru fetch queue yang sudah ada
+      const queueData = await myQueue();
+      console.log(queueData);
 
-    // 3. Load ke audio store
-    loadQueue(queueData);
-
-    // 4. Auto play first song
-    if (queueData.length > 0) {
-      playFromQueue(0);
+      loadQueue(queueData);
+    } catch (error) {
+      console.error("❌ Error creating queue:", error);
     }
   };
   return {
@@ -45,6 +51,6 @@ export function usePlayMusicOrAlbum(song: Music) {
     isThisSongLoading,
     setIsHovered,
     handlePlayClick,
-    handlePlayAlbum,
+    handleQueue,
   };
 }

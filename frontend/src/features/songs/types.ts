@@ -1,30 +1,18 @@
-export interface PostSong {
-  linkSpotify: string;
-  linkYtMusic: string;
-}
+export type TrendsSong = Song & {};
 
-export interface QueryRequestParams {
-  limit: number;
-  page: number;
-  search?: string;
-}
-
-export type Music = {
-  album: string;
-  artist: string;
-  createdAt: string;
-  duration: string;
-  id: number;
-  image: string;
+export type Song = {
+  id: string;
   title: string;
-  updatedAt: string;
-  url: string | null;
+  image: string;
+  link: string;
+  album: string;
+  duration?: string;
+  artist: string;
 };
 
-export type SearchMusic = {
-  artist: string;
-  createdAt: string;
-  id: number;
-  image: string;
-  title: string;
+export type SongResponse = {
+  success: boolean;
+  items: Song[];
+  nextCursor: string | null;
+  hasNextPage: boolean;
 };

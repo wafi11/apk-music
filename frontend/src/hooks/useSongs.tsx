@@ -1,23 +1,22 @@
-// store/useAudioStore.ts
-import { Music } from "@/features/songs/types";
 import { MyQueue } from "@/features/queue/types";
+import { Song } from "@/features/songs/types";
 import { create } from "zustand";
 
 interface AudioState {
   // State
   audioRef: HTMLAudioElement | null;
-  currentSong: Music | null;
+  currentSong: Song | null;
   isPlaying: boolean;
   currentTime: number;
-  queue: Music[];
-  currentIndex: number; // ✅ Track posisi di queue
+  queue: Song[];
+  currentIndex: number;
   duration: number;
   volume: number;
   isLoading: boolean;
 
   // Actions
   initializeAudio: () => void;
-  playSong: (song: Music) => Promise<void>;
+  playSong: (song: Song) => Promise<void>;
   pause: () => void;
   resume: () => Promise<void>;
   seek: (time: number) => void;
@@ -27,11 +26,9 @@ interface AudioState {
   setIsPlaying: (isPlaying: boolean) => void;
   setIsLoading: (isLoading: boolean) => void;
   formatTime: (time: number) => string;
-
-  // ✅ Queue Management
   loadQueue: (queueData: MyQueue[]) => void;
-  appendToQueue: (song: Music) => void;
-  deleteFromQueue: (songId: number) => void;
+  appendToQueue: (song: Song) => void;
+  deleteFromQueue: (songId: string) => void;
   playNext: () => Promise<void>;
   playPrevious: () => Promise<void>;
   playFromQueue: (index: number) => Promise<void>;
@@ -63,7 +60,6 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     });
 
     audio.addEventListener("ended", () => {
-      // ✅ Auto play next song
       const { playNext } = get();
       playNext();
     });
@@ -84,36 +80,34 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     set({ audioRef: audio });
   },
 
-  // ✅ Load Queue dari Backend
   loadQueue: (queueData: MyQueue[]) => {
-    const songs: Music[] = queueData.map((item) => ({
-      album: item.songName,
-      artist: "",
-      image: item.songImage,
-      createdAt: "",
-      updatedAt: "",
-      duration: item.songDuration,
-      id: item.queueItemsId,
-      title: item.songName,
-      url: item.songUrlStreaming,
+    console.log("loadQueue received:", queueData); // debug
+
+    const songs: Song[] = queueData.map((item) => ({
+      id: item.id,
+      image: item.image,
+      link: item.link,
+      title: item.title,
+      artist: item.artist,
+      duration: item.duration,
+      album: item.album,
     }));
 
-    set({
-      queue: songs,
-      currentIndex: -1, // Reset index
-    });
+    console.log("mapped songs:", songs);
 
-    console.log(`✅ Loaded ${songs.length} songs to queue`);
+    set({ queue: songs, currentIndex: -1 });
+    const { playSong } = get();
+    if (queueData.length > 0) {
+      playSong(queueData[0]);
+    }
   },
 
-  // ✅ Append to Queue
-  appendToQueue: (song: Music) => {
+  appendToQueue: (song: Song) => {
     const { queue } = get();
     set({ queue: [...queue, song] });
   },
 
-  // ✅ Delete from Queue (FIXED!)
-  deleteFromQueue: (songId: number) => {
+  deleteFromQueue: (songId: string) => {
     const { queue, currentIndex } = get();
     const newQueue = queue.filter((item) => item.id !== songId);
 
@@ -126,8 +120,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     set({ queue: newQueue, currentIndex: newIndex });
   },
 
-  // ✅ Play Song (Support Queue)
-  playSong: async (song: Music) => {
+  playSong: async (song: Song) => {
     const { audioRef, currentSong, isPlaying, volume, queue } = get();
 
     if (!audioRef) return;
@@ -152,7 +145,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     const songIndex = queue.findIndex((s) => s.id === song.id);
 
     set({ isLoading: true, currentSong: song, currentIndex: songIndex });
-    audioRef.src = song.url as string;
+    audioRef.src = song.link as string;
     audioRef.volume = volume;
 
     try {
@@ -165,7 +158,6 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     }
   },
 
-  // ✅ Play Next Song in Queue
   playNext: async () => {
     const { queue, currentIndex, playSong } = get();
 
@@ -186,7 +178,6 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     await playSong(nextSong);
   },
 
-  // ✅ Play Previous Song
   playPrevious: async () => {
     const { queue, currentIndex, playSong } = get();
 
@@ -199,7 +190,6 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     await playSong(prevSong);
   },
 
-  // ✅ Play from Specific Queue Index
   playFromQueue: async (index: number) => {
     const { queue, playSong } = get();
 

@@ -1,106 +1,78 @@
-import { DEFAULT_GC_TIME, DEFAULT_STALE_TIME } from "@/contants";
 import { api } from "@/lib/api";
-import {
-  API_RESPONSE,
-  ApiPagination,
-  CursorPagination,
-  CursorRequest,
-} from "@/lib/types";
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { toast } from "sonner";
-import { Music, PostSong, QueryRequestParams, SearchMusic } from "../types";
+import { ApiResponse } from "@/lib/types";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { SongResponse } from "../types";
 
-// fetching
-export async function createSongs(request: PostSong): Promise<string> {
-  const req = await api.post<API_RESPONSE<null>>("/song", request);
-  return req.data.message;
-}
-export async function searchMusic(
-  request: CursorRequest,
-): Promise<CursorPagination<SearchMusic[]>> {
-  const url = new URLSearchParams();
-  if (request.cursor) {
-    url.append("cursor", request.cursor.toString());
-  }
-  if (request.search) {
-    url.append("query", request.search.toString());
-  }
-  const req = await api.get<API_RESPONSE<CursorPagination<SearchMusic[]>>>(
-    `/song/search?${url.toString()}`,
-  );
-  return req.data.data;
-}
+export function useSongs(search?: string) {
+  return useInfiniteQuery({
+    queryKey: ["songs", search],
+    queryFn: async ({ pageParam }) => {
+      const params = new URLSearchParams();
+      params.set("limit", "20");
+      if (pageParam) params.set("cursor", pageParam);
+      if (search) params.set("search", search);
 
-export async function updateSongs(request: number): Promise<string> {
-  const req = await api.patch<API_RESPONSE<string>>(`/song/${request}/url-yt`);
-  return req.data.data;
-}
-
-export async function findAllSongs(request: QueryRequestParams) {
-  const url = new URLSearchParams();
-  url.append("limit", request.limit.toString());
-  url.append("page", request.page.toString());
-  if (request.search) {
-    url.append("search", request.search.toString());
-  }
-  const req = await api.get<ApiPagination<Music[]>>(`/song?${url.toString()}`);
-  return req.data.data;
-}
-
-export function useCreatePost() {
-  return useMutation({
-    mutationKey: ["song"],
-    mutationFn: (req: PostSong) => createSongs(req),
+      const res = await api.get<ApiResponse<SongResponse>>(
+        `/songs?${params.toString()}`,
+      );
+      return res.data;
+    },
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.data.nextCursor ?? null,
   });
 }
 
-export function useSearchMusic(search: string) {
-  return useInfiniteQuery<CursorPagination<SearchMusic[]>>({
-    queryKey: ["search-song", search],
-    queryFn: ({ pageParam }) => {
-      return searchMusic({
-        cursor: pageParam as string,
-        search,
-      });
-    },
-    enabled: !!search,
-    getNextPageParam: (lastPage) => {
-      return lastPage.metadata.hasMore
-        ? lastPage.metadata.nextCursor
-        : undefined;
-    },
-    initialPageParam: undefined,
-  });
-}
-
-export function useUpdateSong(id: number) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationKey: ["song", id],
-    mutationFn: () => updateSongs(id),
-    onSuccess: () => {
-      toast.success("Successfullt update song");
-      const request = {
-        limit: 10,
-        page: 1,
-      };
-      queryClient.invalidateQueries({
-        queryKey: ["songs-with-pagination", request],
-      });
-    },
-  });
-}
-
-export function useAllSongs(request: QueryRequestParams) {
+export function useLyrics(
+  title: string,
+  album: string,
+  duration: string,
+  artist: string,
+) {
   return useQuery({
-    queryKey: ["songs-with-pagination", request],
-    queryFn: () => findAllSongs(request),
-    gcTime: DEFAULT_GC_TIME,
-    staleTime: DEFAULT_STALE_TIME,
+    queryKey: ["lyrics", title, artist],
+    queryFn: async () => {
+      const req = await api.get<ApiResponse<{ plain: string; synced: string }>>(
+        `/songs/lyric?title=${title}&artist=${artist}&album=${album}&duration=${duration}`,
+      );
+      return req.data.data;
+    },
+    enabled: !!title && !!artist,
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 30,
+  });
+}
+export function useSongsByAlbum(albumId: string) {
+  return useInfiniteQuery({
+    queryKey: ["songs-album", albumId],
+    queryFn: async ({ pageParam }) => {
+      const params = new URLSearchParams();
+      params.set("limit", "20");
+      if (pageParam) params.set("cursor", pageParam);
+
+      const res = await api.get<ApiResponse<SongResponse>>(
+        `/songs/album/${albumId}?${params.toString()}`,
+      );
+      return res.data;
+    },
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.data.nextCursor ?? null,
+  });
+}
+
+export function useSongsByArtist(artistId: string) {
+  return useInfiniteQuery({
+    queryKey: ["songs-album", artistId],
+    queryFn: async ({ pageParam }) => {
+      const params = new URLSearchParams();
+      params.set("limit", "20");
+      if (pageParam) params.set("cursor", pageParam);
+
+      const res = await api.get<ApiResponse<SongResponse>>(
+        `/songs/artist/${artistId}?${params.toString()}`,
+      );
+      return res.data;
+    },
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.data.nextCursor ?? null,
   });
 }

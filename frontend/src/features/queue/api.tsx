@@ -1,24 +1,30 @@
 import { api } from "@/lib/api";
-import { API_RESPONSE } from "@/lib/types";
+import { ApiResponse } from "@/lib/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { MyQueue } from "./types";
 import { DEFAULT_GC_TIME, DEFAULT_STALE_TIME } from "@/contants";
 
-export async function createQueue(albumName: string): Promise<string> {
-  const req = await api.post<API_RESPONSE<null>>("/queue", { albumName });
+type CreateQueue = {
+  songs: {
+    id: string
+  }[]
+}
+
+export async function createQueue({ data }: { data: CreateQueue }): Promise<string> {
+  const req = await api.post<ApiResponse<null>>("/queues", data);
   return req.data.message;
 }
 
 export async function myQueue(): Promise<MyQueue[]> {
-  const req = await api.get<API_RESPONSE<MyQueue[]>>("/queue");
+  const req = await api.get<ApiResponse<MyQueue[]>>("/queues");
   return req.data.data;
 }
 
-export function useCreateQueue(albumName: string) {
+export function useCreateQueue(data: CreateQueue) {
   return useMutation({
-    mutationKey: ["queue", albumName],
-    mutationFn: () => createQueue(albumName),
+    mutationKey: ["queue", data],
+    mutationFn: () => createQueue({ data }),
     onSuccess: (ctx) => {
       return toast.success(ctx);
     },

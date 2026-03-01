@@ -1,22 +1,15 @@
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from "axios";
-import {
-  API_RESPONSE,
-  ApiError,
-  BackendResponse,
-  RequestConfig,
-} from "./types";
+import { ApiResponse, ApiError, BackendResponse, RequestConfig } from "./types";
+import { NEXT_PUBLIC_API_URL } from "@/contants";
 
 export class Api {
   private instance: AxiosInstance;
 
   constructor() {
     this.instance = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_URL,
+      baseURL: NEXT_PUBLIC_API_URL,
       headers: {
-        // Authorization: `Bearer ${authStore.getAccessToken()}`,
         "Content-Type": "application/json",
-        Branchname: process.env.NEXT_PUBLIC_BRANCH_NAME,
-        Branchcode: process.env.NEXT_PUBLIC_BRANCH_CODE,
       },
     });
 
@@ -96,13 +89,13 @@ export class Api {
     };
   }
 
-  async get<T>(url: string, config?: RequestConfig): Promise<API_RESPONSE<T>> {
+  async get<T>(url: string, config?: RequestConfig): Promise<ApiResponse<T>> {
     try {
       const response = await this.instance.get(url, {
         headers: this.getHeaders(config),
       });
 
-      return response.data as API_RESPONSE<T>;
+      return response.data as ApiResponse<T>;
     } catch (error) {
       throw this.handleError(error as ApiError);
     }
@@ -112,7 +105,7 @@ export class Api {
     url: string,
     data?: unknown,
     config?: RequestConfig,
-  ): Promise<API_RESPONSE<T>> {
+  ): Promise<ApiResponse<T>> {
     try {
       const formattedData =
         data instanceof FormData
@@ -123,7 +116,7 @@ export class Api {
         headers: this.getHeaders(config),
       });
 
-      return response.data as API_RESPONSE<T>;
+      return response.data as ApiResponse<T>;
     } catch (error) {
       throw this.handleError(error as ApiError);
     }
@@ -133,7 +126,7 @@ export class Api {
     url: string,
     data?: unknown,
     config?: RequestConfig,
-  ): Promise<API_RESPONSE<T>> {
+  ): Promise<ApiResponse<T>> {
     try {
       const formattedData =
         data instanceof FormData
@@ -144,7 +137,7 @@ export class Api {
         headers: this.getHeaders(config),
       });
 
-      return response.data as API_RESPONSE<T>;
+      return response.data as ApiResponse<T>;
     } catch (error) {
       throw this.handleError(error as ApiError);
     }
@@ -154,14 +147,14 @@ export class Api {
     url: string,
     data?: unknown,
     config?: RequestConfig,
-  ): Promise<API_RESPONSE<T>> {
+  ): Promise<ApiResponse<T>> {
     try {
       const formattedData = this.formatData(data, config?.isMultipart);
       const response = await this.instance.patch(url, formattedData, {
         headers: this.getHeaders(config),
       });
 
-      return response.data as API_RESPONSE<T>;
+      return response.data as ApiResponse<T>;
     } catch (error) {
       throw this.handleError(error as ApiError);
     }
@@ -170,13 +163,13 @@ export class Api {
   async delete<T>(
     url: string,
     config?: RequestConfig,
-  ): Promise<API_RESPONSE<T>> {
+  ): Promise<ApiResponse<T>> {
     try {
       const response = await this.instance.delete(url, {
         headers: this.getHeaders(config),
       });
 
-      return response.data as API_RESPONSE<T>;
+      return response.data as ApiResponse<T>;
     } catch (error) {
       throw this.handleError(error as ApiError);
     }
