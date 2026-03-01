@@ -1,0 +1,21 @@
+{
+  "results": [
+    {
+      "type": "ARTIST",
+      "artistId": "UCgOE4qadY69CrmGJZoKid2g",
+      "name": "Reality Club",
+      "thumbnails": [
+        {
+          "url": "https://lh3.googleusercontent.com/YfD3p4VViGZEJw-d5IrbyTjj7YFfd1LnpLP6BU2hFm0WGbHM25ot2BonJZHNV6CeGXjJ_zI5OZVXXyW0=w60-h60-p-l90-rj",
+          "width": 60,
+          "height": 60
+        },
+        {
+          "url": "https://lh3.googleusercontent.com/YfD3p4VViGZEJw-d5IrbyTjj7YFfd1LnpLP6BU2hFm0WGbHM25ot2BonJZHNV6CeGXjJ_zI5OZVXXyW0=w120-h120-p-l90-rj",
+          "width": 120,
+          "height": 120
+        }
+      ]
+    }
+  ]
+}

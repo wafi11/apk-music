@@ -1,0 +1,1 @@
+ALTER TABLE "songs" ALTER COLUMN "yt_id" SET DATA TYPE varchar(30);
